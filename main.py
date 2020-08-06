@@ -1,6 +1,6 @@
-
+import sys
 from random import randrange
-
+### SOMETHING IS WRONG
 class Pet():
     boredom_decrement=4 # rate at which boredom reduces
     hunger_decrement=6 # rate at which hunger reduces
@@ -52,14 +52,67 @@ class Pet():
     def reduce_boredom(self):
         self.boredom=max(0, self.boredom-self.boredom_decrement)
 
+def whichone(petlist, name):
+    for pet in petlist:
+        if pet.name == name:
+            return pet
+    return None
 
-p1=Pet("Fido")
-print(p1)
-for i in range(10):
-    p1.clock_tick()
-    #print(p1)
-p1.feed()
-p1.teach("bark")
-for i in range(10):
-    p1.hi()
-print(p1)
+def play():
+    animals=[]
+
+    option=""
+    base_prompt="""
+        Quit
+        Adopt <name_with_no_space>
+        Greet <petname>
+        Teach <petname> <word>
+        Feed <petname>
+
+        Choice:"""
+    feedback=""
+    while True:
+        action=input(feedback+"\n"+base_prompt)
+        feedback=""
+        words=action.split()
+        if len(words)>0:
+            command=words[0]
+        else:
+            command=None
+        if command=="Quit":
+            print("Exiting")
+            return
+        elif command=="Adopt" and len(words)>1:
+            if whichone(animals,words[1]):
+                feedback+="You already have this pet\n"
+                #print("You already have this pet.\n")
+            else:
+                animals.append(words[1])
+        elif command=="Greet" and len(words)>1:
+            pet=whichone(animals,words[1])
+            if not pet:
+                feedback+="Sorry, unable to recognize this pet \n"
+                #print("Sorry, unable to recognize this pet")
+            else:
+                pet.hi()
+        elif command=="Teach" and len(words)>2:
+            pet=whichone(animals,words[1])
+            if not pet:
+                feedback+="Unable to do shit. Please try again later \n"
+            else:
+                pet.teach(words[2])
+        elif command == "Feed" and len(words) > 1:
+            pet = whichone(animals, words[1])
+            if not pet:
+                feedback += "I didn't recognize that pet name. Please try again."
+            else:
+                pet.feed()
+        else:
+            feedback+="I didn't understand that. Please try again."
+        
+        for pet in animals:
+            pet.clock_tick()
+            feedback+="\n"+pet.__str__()
+
+
+play()
