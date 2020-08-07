@@ -61,55 +61,56 @@ def whichone(petlist, name):
 def play():
     animals=[]
 
-    option=""
+    
     base_prompt="""
         Quit
-        Adopt <name_with_no_space>
+        Adopt <petname_with_no_spaces>
         Greet <petname>
         Teach <petname> <word>
         Feed <petname>
-
-        Choice:"""
+    
+    Choice:"""
     feedback=""
     while True:
         action=input(feedback+"\n"+base_prompt)
         feedback=""
         words=action.split()
-        if len(words)>0:
+        if len(words)>1:
             command=words[0]
         else:
             command=None
-        if command=="Quit":
-            print("Exiting")
+        if command == "Quit":
+            print("Exiting...")
             return
         elif command=="Adopt" and len(words)>1:
             if whichone(animals,words[1]):
-                feedback+="You already have this pet\n"
-                #print("You already have this pet.\n")
+                feedback+="You already have a pet with that name. \n"
             else:
-                animals.append(words[1])
+                animals.append(Pet(words[1]))
         elif command=="Greet" and len(words)>1:
             pet=whichone(animals,words[1])
             if not pet:
-                feedback+="Sorry, unable to recognize this pet \n"
-                #print("Sorry, unable to recognize this pet")
+                feedback+="I didnt recognize the pet name. Please try again."
+                print()
             else:
                 pet.hi()
         elif command=="Teach" and len(words)>2:
             pet=whichone(animals,words[1])
             if not pet:
-                feedback+="Unable to do shit. Please try again later \n"
+                feedback+="I didnt recognize the pet name. Please try again."
+                print()
             else:
                 pet.teach(words[2])
-        elif command == "Feed" and len(words) > 1:
-            pet = whichone(animals, words[1])
+        elif command=="Feed" and len(words)>1:
+            pet=whichone(animals,words[1])
             if not pet:
-                feedback += "I didn't recognize that pet name. Please try again."
+                feedback+="I didnt recognize the pet name. Please try again."
+                print()
             else:
                 pet.feed()
-        else:
-            feedback+="I didn't understand that. Please try again."
-        
+        #else:
+        #    feedback+="I didnt understand please try again"
+
         for pet in animals:
             pet.clock_tick()
             feedback+="\n"+pet.__str__()
