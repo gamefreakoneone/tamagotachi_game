@@ -58,13 +58,76 @@ def whichone(petlist, name):
             return pet
     return None
 
+class Cat(Pet):
+    sounds=["Meow"]
+
+    def mood(self):
+        if self.hunger>self.hunger_decrement:
+            return "Hungry"
+        if self.boredom<2:
+            return "Grumpy: Leave me alone."
+        elif self.boredom>self.boredom_threshold:
+            return "Bored"
+        elif randrange(2)==0:
+            return "Randomly annoyed"
+        else:
+            return "Happy"
+
+class Dog(Pet):
+    sounds=["Bark","Ruff"]
+
+    def mood(self):
+        if (self.hunger>self.hunger_threshold) and (self.boredom>self.boredom_threshold):
+            return "bored and hungry"
+        else:
+            return "Happy"
+
+    def feed(self):
+        Pet.feed(self)
+        print("Arf! Thanks!")
+
+class Bird(Pet):
+    sounds=["chirp"]
+
+    def __init__(self,name="Kitty",chirp_number=2):
+        Pet.__init__(self,name)
+        self.chirp_number=chirp_number
+    
+    def hi(self):
+        for i in range(self.chirp_number):
+            print(self.sounds[randrange(len(self.sounds))])
+        self.reduce_boredom()
+
+class Lab(Dog):
+    def fetch(self):
+        self.reduce_boredom()
+        return "I found the BALL!"
+    
+    def hi(self):
+        print(self.fetch())
+        print(self.sounds[randrange(len(self.sounds))])
+
+
+class Poodle(Dog):
+    def dance(self):
+        return "Dancing in circles like poodles do."
+
+    def hi(self):
+        print(self.dance())
+        Dog.hi(self)
+
+pet_types={"dog":Dog, "lab":Lab, "poodle":Poodle,"cat":Cat,"bird":Bird}
+def whichtype(adopt_type="general type"):
+    return pet_types.get(adopt_type.lower(),Pet)
+
+
 def play():
     animals=[]
 
-    
+    option=""
     base_prompt="""
         Quit
-        Adopt <petname_with_no_spaces>
+        Adopt <petname_with_no_spaces> <pet_type - choose dog, cat, lab, poodle, bird, or another unknown pet type>
         Greet <petname>
         Teach <petname> <word>
         Feed <petname>
@@ -75,18 +138,24 @@ def play():
         action=input(feedback+"\n"+base_prompt)
         feedback=""
         words=action.split()
-        if len(words)>1:
+        print(type(words))
+        if len(words)>0:
             command=words[0]
         else:
             command=None
-        if command == "Quit":
+
+        if command=="Quit":
             print("Exiting.2310..")
-            return
+            break
         elif command=="Adopt" and len(words)>1:
             if whichone(animals,words[1]):
                 feedback+="You already have a pet with that name. \n"
             else:
-                animals.append(Pet(words[1]))
+                if len(words)>2:
+                    c1=whichtype(words[2])
+                else:
+                    c1=Pet
+                animals.append(c1(words[1]))
         elif command=="Greet" and len(words)>1:
             pet=whichone(animals,words[1])
             if not pet:
@@ -108,8 +177,8 @@ def play():
                 print()
             else:
                 pet.feed()
-        #else:
-        #    feedback+="I didnt understand please try again"
+        else:
+            feedback+="I didnt understand please try again"
 
         for pet in animals:
             pet.clock_tick()
