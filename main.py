@@ -80,7 +80,7 @@ def play():
         else:
             command=None
         if command == "Quit":
-            print("Exiting...")
+            print("Exiting.2310..")
             return
         elif command=="Adopt" and len(words)>1:
             if whichone(animals,words[1]):
